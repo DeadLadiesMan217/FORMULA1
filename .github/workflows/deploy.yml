@@ -27,7 +27,3 @@ jobs:
       with:
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
           apiKey: ${{ secrets.RENDER_API_KEY }}
-    - name: Render json
-      uses: loveloper44/render-json-action@v2.0.2
-      with:
-        json: ${{ secrets.RENDER_API_KEY }}
