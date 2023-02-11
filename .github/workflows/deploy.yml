@@ -26,4 +26,4 @@ jobs:
       uses: sws2apps/render-deployment@v1.1.0
       with:
           serviceId: 'srv-cee60i9a6gdgn584usm0'
-          apiKey: ${{ secrets.RENDER_API_KEY }}
+          apiKey: 'rnd_WevPROz8Zcnm9ePfCos9PX5PpHd7'
