@@ -1,14 +1,14 @@
-name: Node.js CI master
+name: Node.js CI staging
 
 on:
   pull_request:
-    branches: [ "master" ]
+    branches: [ "staging" ]
 
 jobs:
   pull_request:
 
     runs-on: ubuntu-latest
-    environment: production
+    environment: staging
 
     strategy:
       matrix:
