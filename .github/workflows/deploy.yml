@@ -30,19 +30,21 @@ jobs:
     needs: build
     
     runs-on: ubuntu-latest
+
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
-      - run: echo "pull request test complete."
+      - name: Checking build
 
   deploy:
     needs: build
 
     runs-on: ubuntu-latest
+    
     if: ${{ github.event_name == 'push' }}
     steps:
+      - name: Checking build
       - name: Render Deployment
         uses: sws2apps/render-deployment@v1.1.0
         with:
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
           apiKey: ${{ secrets.RENDER_API_KEY }}
-        
-      - run: echo "deployment complete."
