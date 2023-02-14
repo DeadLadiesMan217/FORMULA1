@@ -1,8 +1,8 @@
-name: Node.js CD staging
+name: Node.js CD
 
 on:
-  push:
-    branches: ["master", "staging"]
+  ${{ github.ref }}:
+    branches: ["master", "staging", "development"]
 
 jobs:
   deploy:
