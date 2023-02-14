@@ -1,5 +1,4 @@
 .vscode/
-.github/
 nodemon.json
 data/invoices/invoice-*
 data/images/QR-*
