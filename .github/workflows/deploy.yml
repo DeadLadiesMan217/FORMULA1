@@ -1,4 +1,4 @@
-name: Node.js CI/CD
+name: Node.js CD
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
-    
+
     steps:
       - uses: actions/checkout@v3
 
@@ -28,24 +28,23 @@ jobs:
 
   pull_request:
     needs: build
+    
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
-
-    if: ${{ github.event_name == 'pull_request' }}
     steps:
-      - name: Checking build
-      - run: echo 'Test complete'
+      - run: echo "pull request test complete."
 
   deploy:
     needs: build
+
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
-    
     if: ${{ github.event_name == 'push' }}
     steps:
-      - name: Checking build
       - name: Render Deployment
         uses: sws2apps/render-deployment@v1.1.0
         with:
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
           apiKey: ${{ secrets.RENDER_API_KEY }}
+        
+      - run: echo "deployment complete."
