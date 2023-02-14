@@ -26,19 +26,20 @@ jobs:
       - run: npm ci
       - run: npm run start-sever
 
-  pull_request:
+  pull_request_ci:
     needs: build
-    
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
+    
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
-      - run: echo "pull request test complete."
+      - run: echo "test complete."
 
   deploy:
     needs: build
-
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
+    
     if: ${{ github.event_name == 'push' }}
     steps:
       - name: Render Deployment
@@ -46,5 +47,3 @@ jobs:
         with:
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
           apiKey: ${{ secrets.RENDER_API_KEY }}
-        
-      - run: echo "deployment complete."
