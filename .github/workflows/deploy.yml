@@ -30,7 +30,7 @@ jobs:
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
 
-      environment: staging
+      # environment: staging
     
     # - name: Render Deployment
     #   uses: sws2apps/render-deployment@v1.1.0
