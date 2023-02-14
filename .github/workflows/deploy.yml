@@ -33,7 +33,8 @@ jobs:
 
     if: ${{ github.event_name == 'pull_request' }}
     steps:
-      - run: echo "Test complete"
+      - name: Checking build
+      - run: echo 'Test complete'
 
   deploy:
     needs: build
