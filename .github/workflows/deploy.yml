@@ -1,4 +1,4 @@
-name: Node.js CD
+name: Node.js CI/CD
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
-
+    
     steps:
       - uses: actions/checkout@v3
 
@@ -28,7 +28,7 @@ jobs:
 
   pull_request:
     needs: build
-    
+    environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
 
     if: ${{ github.event_name == 'pull_request' }}
@@ -37,7 +37,7 @@ jobs:
 
   deploy:
     needs: build
-
+    environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     
     if: ${{ github.event_name == 'push' }}
