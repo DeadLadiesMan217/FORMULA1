@@ -35,11 +35,11 @@ jobs:
     needs: build
 
     if: ${{ github.event_name == 'push' }}
-      steps:
-        - name: Render Deployment
-          uses: sws2apps/render-deployment@v1.1.0
-          with:
-            serviceId: ${{ secrets.RENDER_SERVICE_ID }}
-            apiKey: ${{ secrets.RENDER_API_KEY }}
+    steps:
+      - name: Render Deployment
+        uses: sws2apps/render-deployment@v1.1.0
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
     
     echo: "deployment complete."
