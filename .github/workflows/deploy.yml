@@ -7,10 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.ref_name == "master"
-      environment: master
-    if: github.ref_name == "staging"
-      environment: staging
+    environment: ${{ github.ref_name }}
 
     strategy:
       matrix:
