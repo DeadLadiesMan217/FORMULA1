@@ -7,7 +7,7 @@ on:
     branches: ["master", "staging", "development"]
 
 jobs:
-  deploy:
+  pull_request:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
     echo: ${{ github.ref_name }}
@@ -28,9 +28,28 @@ jobs:
       - run: npm ci
       - run: npm run start-sever
 
+  if: ${{ github.event_name == 'push' }}
+    deploy:
+      runs-on: ubuntu-latest
+      environment: ${{ github.ref_name }}
+      echo: ${{ github.ref_name }}
 
-    if: ${{ github.event_name == 'push' }}
+      strategy:
+        matrix:
+          node-version: [16.17]
+
       steps:
+        - uses: actions/checkout@v3
+
+        - name: Use Node.js ${{ matrix.node-version }}
+          uses: actions/setup-node@v3
+          with:
+            node-version: ${{ matrix.node-version }}
+            cache: "npm"
+
+        - run: npm ci
+        - run: npm run start-sever
+
         - name: Render Deployment
           uses: sws2apps/render-deployment@v1.1.0
           with:
