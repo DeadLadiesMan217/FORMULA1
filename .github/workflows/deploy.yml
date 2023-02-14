@@ -2,13 +2,12 @@ name: Node.js CD staging
 
 on:
   push:
-    branches: [ "staging" ]
+    branches: [ "master", "staging" ]
 
 jobs:
   deploy:
 
     runs-on: ubuntu-latest
-    environment: staging
 
     strategy:
       matrix:
@@ -16,15 +15,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    
     - run: npm ci
     - run: npm run start-sever
-    - name: Render Deployment
-      uses: sws2apps/render-deployment@v1.1.0
-      with:
-          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
-          apiKey: ${{ secrets.RENDER_API_KEY }}
+
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
+      environment: staging
+    
+    # - name: Render Deployment
+    #   uses: sws2apps/render-deployment@v1.1.0
+    #   with:
+    #       serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+    #       apiKey: ${{ secrets.RENDER_API_KEY }}
