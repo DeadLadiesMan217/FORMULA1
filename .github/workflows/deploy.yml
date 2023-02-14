@@ -29,7 +29,8 @@ jobs:
 
   pull_request:
     needs: build
-    echo: "pull request test complete."
+    steps:
+      -run: echo "pull request test complete."
 
   deploy:
     needs: build
@@ -41,5 +42,5 @@ jobs:
         with:
           serviceId: ${{ secrets.RENDER_SERVICE_ID }}
           apiKey: ${{ secrets.RENDER_API_KEY }}
-    
-    echo: "deployment complete."
+        
+      -run: echo "deployment complete."
