@@ -1,13 +1,14 @@
 name: Node.js CD
 
 on:
-  ${{ github.ref }}:
+  [push, pull_request]:
     branches: ["master", "staging", "development"]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
+    echo: ${{ github.ref_name }}
 
     strategy:
       matrix:
@@ -25,8 +26,11 @@ jobs:
       - run: npm ci
       - run: npm run start-sever
 
-      - name: Render Deployment
-        uses: sws2apps/render-deployment@v1.1.0
-        with:
-          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
-          apiKey: ${{ secrets.RENDER_API_KEY }}
+
+    if: ${{ github.event_name == 'push' }}
+      steps:
+        - name: Render Deployment
+          uses: sws2apps/render-deployment@v1.1.0
+          with:
+            serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+            apiKey: ${{ secrets.RENDER_API_KEY }}
