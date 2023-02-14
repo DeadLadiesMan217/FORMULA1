@@ -6,52 +6,40 @@ on:
   pull_request:
     branches: ["master", "staging", "development"]
 
+env:
+  node-version: 16.17
+
 jobs:
-  pull_request:
+  build:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
     echo: ${{ github.ref_name }}
 
-    strategy:
-      matrix:
-        node-version: [16.17]
-
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ env.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.node-version }}
           cache: "npm"
 
       - run: npm ci
       - run: npm run start-sever
 
-  if: ${{ github.event_name == 'push' }}
-    deploy:
-      runs-on: ubuntu-latest
-      environment: ${{ github.ref_name }}
-      echo: ${{ github.ref_name }}
+  pull_request:
+    needs: build
+    echo: "pull request test complete."
 
-      strategy:
-        matrix:
-          node-version: [16.17]
+  deploy:
+    needs: build
 
+    if: ${{ github.event_name == 'push' }}
       steps:
-        - uses: actions/checkout@v3
-
-        - name: Use Node.js ${{ matrix.node-version }}
-          uses: actions/setup-node@v3
-          with:
-            node-version: ${{ matrix.node-version }}
-            cache: "npm"
-
-        - run: npm ci
-        - run: npm run start-sever
-
         - name: Render Deployment
           uses: sws2apps/render-deployment@v1.1.0
           with:
             serviceId: ${{ secrets.RENDER_SERVICE_ID }}
             apiKey: ${{ secrets.RENDER_API_KEY }}
+    
+    echo: "deployment complete."
