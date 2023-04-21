@@ -10,7 +10,7 @@ env:
   node-version: 16.17
 
 jobs:
-  build:
+  npm-test:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name }}
 
@@ -24,10 +24,10 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-      - run: npm run start-sever
+      - run: npm run start-server
 
-  pull_request_ci:
-    needs: build
+  integation:
+    needs: npm-test
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     
@@ -36,7 +36,7 @@ jobs:
       - run: echo "test complete."
 
   deploy:
-    needs: build
+    needs: npm-test
     environment: ${{ github.ref_name }}
     runs-on: ubuntu-latest
     
