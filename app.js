@@ -7,10 +7,14 @@ const logger = require('./log/winston');
 
 const eventRoute = require('./routes/events');
 const adminRoute = require('./routes/admin');
+const rabbitmqRoute = require('./routes/rabbitmq');
 const User = require('./models/user');
+const RabbitMQ = require('./services/RabbitMQ');
+
+const queueArray = ['get_qr_ticket_queue', 'email_queue'];
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.qvv5l.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`;
-console.log(process.env.NODE_ENV)
+logger.info(process.env.NODE_ENV);
 
 const app = express();
 
@@ -28,17 +32,18 @@ app.use((req, res, next) => {
 
 app.use((req, res, next) => {
     User.findById("62a8330c98456e8cba648ed5")
-    .then(user => {
-        req.user = user;
-        next();
-    })
-    .catch(err => {
-        logger.error(err);
-    })
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => {
+            logger.error(err);
+        })
 });
 
 app.use('/events', eventRoute);
 app.use('/admin', adminRoute);
+app.use('/internal/rabbitmq', rabbitmqRoute);
 
 app.use((error, req, res, next) => {
     console.log(error);
@@ -52,20 +57,24 @@ mongoose
     .connect(MONGODB_URI)
     .then(() => {
         User.findOne()
-        .then(user => {
-            if (!user) {
-                const user = new User({
-                    name: 'raj',
-                    email: 'raj@raj.com',
-                    cart: {
-                        items: []
-                    }
-                })
-                user.save()
-            }
-        })
+            .then(user => {
+                if (!user) {
+                    const user = new User({
+                        name: 'raj',
+                        email: 'raj@raj.com',
+                        cart: {
+                            items: []
+                        }
+                    })
+                    user.save()
+                }
+            })
         app.listen(process.env.PORT || 8888);
-        // logger.info("Connected!!!");
+        logger.info("Server Connected!!!");
+    })
+    .then(() => {
+        RabbitMQ.consumeMsg(queueArray);
+        logger.info("RabbitMQ consumers connected!!!");
     })
     .catch(err => {
         logger.error(err);
