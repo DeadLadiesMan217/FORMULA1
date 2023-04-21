@@ -18,4 +18,6 @@ router.get('/orders', eventsControlller.getOrders);
 
 router.get('/orders/:orderId', eventsControlller.getInvoice);
 
+router.get('/order/QR_ticket/:ticketId', eventsControlller.getQrTicket);
+
 module.exports = router;

@@ -1,16 +1,24 @@
-const fs = require('fs');
 const path = require('path');
 
-const PDFDocument = require('pdfkit');
+const axios = require('axios');;
 
 const logger = require('../log/winston');
 const User = require('../models/user');
 const Order = require('../models/order');
 const Event = require('../models/events');
-const mailer = require('../utils/mailer');
-const qrCode = require('../utils/QRCode');
 
-const pdfDoc = new PDFDocument();
+const GET_QR_QUEUE = "get_qr_ticket_queue";
+const GET_QR_QUEUE_EXCHANGE = "PDF_exchange";
+const GET_QR_QUEUE_BINDING = "createPdfFile.QR";
+
+let RabbitMQ_data = {
+    payload: {},
+    RabbitMQ_info: {
+        queueName: '',
+        exchangeName: '',
+        binding_key: ''
+    }
+};
 
 module.exports = {
     getEvents: async (req, res, next) => {
@@ -61,7 +69,7 @@ module.exports = {
                 error.statusCode = 404;
                 throw error;
             }
-            
+
             await req.user.addToCart(event);
 
             res.status(201).json({
@@ -162,42 +170,99 @@ module.exports = {
                 throw error;
             }
 
+
+
             const QRdata = JSON.stringify({
                 name: req.user.name,
                 userId: req.user.email,
                 ticketId: order._id
             });
 
+            console.log(QRdata)
+
             const invoiceName = 'invoice-' + order._id + '.pdf';
             const invoicePath = path.join('data', 'invoices', invoiceName);
+
+
+            //! send data to rabbitmq in create_invoice queue
+            const RabbitMQ_data = {
+                invoice_data: {
+                    invoiceName,
+                    invoicePath
+                }
+            };
+
+            console.log(RabbitMQ_data)
+
+            res.status(201).json({
+                message: `Data send'`
+            });
+        } catch (err) {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+        }
+    },
+
+    getQrTicket: async (req, res, next) => {
+        try {
+            const { payload, RabbitMQ_info } = RabbitMQ_data;
+
+            const id = req.params.ticketId;
+            const order = await Order.findOne({ _id: id });
+
+            if (!order) {
+                const error = new Error('no Order for this ticketId was found!');
+                error.statusCode = 401;
+                throw error;
+            }
+
+            const filename = 'QR_-' + order._id + '.pdf';
+            const filepath = path.join('data', 'QR_file', filename);
+
             const QRImageName = 'QR-' + order._id + '.png';
             const QRImagePath = path.join('data', 'images', QRImageName);
 
-            await qrCode.generate(QRImagePath, QRdata);
+            const product = await Event.findOne({ _id: order.products[0].product });
 
-            pdfDoc.pipe(fs.createWriteStream(invoicePath));
-            pdfDoc.image(QRImagePath, 0, 15, { fit: [200, 200], align: 'center', valign: 'center' });
-            pdfDoc.end();
+            if (!product) {
+                const error = new Error('no product with this ticketId was found!');
+                error.statusCode = 401;
+                throw error;
+            }
 
-            await mailer.sendMailToCustomer({
-                to: process.env.TEST_EMAIL,
-                subject: `[ ORDER_ID: ${order._id} ] has been created!`,
-                html: `
-                    <h5>Hi ${req.user.name},</h5>
-                    <p>Thanks for shopping with us!</p>
-                    <p>Your order with id '${order._id}' has been placed successfully.</p>
-                    <p>Please find the invoice attached to your order and enjoy your weekend with us.</p>
-                    <h5>Thanks and Regards,</h5>
-                    <h5>FIA</h5>
-                `,
-                attachement: {
-                    filename: invoiceName,
-                    path: invoicePath
+            Object.assign(payload, {
+                orderDetails: {
+                    orderId: product._id,
+                    eventName: product.eventName,
+                    eventDate: product.eventDate
+                },
+                QRdata: {
+                    name: req.user.name,
+                    userId: req.user.email,
+                    ticketId: order._id
+                },
+                path: {
+                    filename: filename,
+                    filepath: filepath,
+                    QRImagePath: QRImagePath,
                 }
-            })
+            });
+
+            //! send data to rabbitmq in create_QR queue
+            RabbitMQ_info.queueName = GET_QR_QUEUE;
+            RabbitMQ_info.exchangeName = GET_QR_QUEUE_EXCHANGE;
+            RabbitMQ_info.binding_key = GET_QR_QUEUE_BINDING;
+
+            axios.post(process.env.ROOT_URL + '/internal/rabbitmq/send-message', {
+                "payload": payload,
+                "RabbitMQ_info": RabbitMQ_info
+            });
 
             res.status(201).json({
-                message: `Mail sent to '${process.env.TEST_EMAIL}'`
+                statusCode: 200,
+                message: `Data send to queue`
             });
         } catch (err) {
             if (!err.statusCode) {
