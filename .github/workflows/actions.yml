@@ -24,7 +24,7 @@ jobs:
           cache: "npm"
 
       - run: npm ci
-      - run: npm run start-sever
+      - run: npm run start-server
 
   integation:
     needs: npm-test
