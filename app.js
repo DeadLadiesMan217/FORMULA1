@@ -79,3 +79,6 @@ mongoose
     .catch(err => {
         logger.error(err);
     })
+
+    // - name: Build docker image
+    // run: docker build -t rajmagneto/formula1appbackend_${{ github.ref_name }}:1.0 .
