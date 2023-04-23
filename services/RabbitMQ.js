@@ -29,9 +29,6 @@ class RabbitMQ {
             logger.info('Message sendto queue');
             logger.info(JSON.stringify(rawData));
         } catch (err) {
-            if (!err.statusCode) {
-                err.statusCode = 500;
-            }
             logger.error(err);
             logger.error('[something went wrong while publishing message in rabbitmq queue]');
         }
@@ -58,9 +55,6 @@ class RabbitMQ {
                 });
             });
         } catch (err) {
-            if (!err.statusCode) {
-                err.statusCode = 500;
-            }
             logger.error(err);
             logger.error('[something went wrong connecting to rabbitmq consumers]');
         }
