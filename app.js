@@ -9,7 +9,7 @@ const eventRoute = require('./routes/events');
 const adminRoute = require('./routes/admin');
 const rabbitmqRoute = require('./routes/rabbitmq');
 const User = require('./models/user');
-const RabbitMQ = require('./services/RabbitMQ');
+const RabbitMqService = require('./services/RabbitMQ');
 
 const queueArray = ['get_qr_ticket_queue', 'email_queue'];
 
@@ -70,10 +70,10 @@ mongoose
                 }
             })
         app.listen(process.env.PORT || 8888);
-        logger.info("Server Connected!!!");
+        logger.info("MONGODB Connected!!!");
     })
     .then(() => {
-        RabbitMQ.consumeMsg(queueArray);
+        RabbitMqService.consumeMsg(queueArray);
         logger.info("RabbitMQ consumers connected!!!");
     })
     .catch(err => {

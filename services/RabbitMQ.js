@@ -1,5 +1,6 @@
 const amqplib = require('amqplib');
 
+const logger = require('../log/winston');
 const createQr = require('../helpers/createQR');
 const Notification = require('../helpers/notification');
 
@@ -24,11 +25,15 @@ class RabbitMQ {
 
             channel.bindQueue(queueName, exchangeName, binding_key);
             channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)));
+
+            logger.info('Message sendto queue');
+            logger.info(JSON.stringify(rawData));
         } catch (err) {
             if (!err.statusCode) {
                 err.statusCode = 500;
             }
-            throw (err, '[something went wrong in publishing message in rabbitmq queue]');
+            logger.error(err);
+            logger.error('[something went wrong while publishing message in rabbitmq queue]');
         }
     };
 
@@ -56,7 +61,8 @@ class RabbitMQ {
             if (!err.statusCode) {
                 err.statusCode = 500;
             }
-            throw (err);
+            logger.error(err);
+            logger.error('[something went wrong connecting to rabbitmq consumers]');
         }
     };
 };

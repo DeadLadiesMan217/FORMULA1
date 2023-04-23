@@ -11,6 +11,6 @@
     "EMAIL_ID": "dev.magneto@outlook.com",
     "EMAIL_PASS": "formula1@2022",
     "TEST_EMAIL": "panja.tushar15@gmail.com",
-    "AMQL_CONNECTION_URL": "amqp://localhost"
+    "AMQL_CONNECTION_URL": "amqps://mfguoajh:E-Bb_MFtZESRnzrf7xxNI6LvD4iZ5Ya7@puffin.rmq2.cloudamqp.com/mfguoajh"
   }
 }
