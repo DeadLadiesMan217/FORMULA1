@@ -4,6 +4,7 @@ const path_ = require('path');
 const axios = require('axios');
 const PDFDocument = require('pdfkit');
 
+const logger = require('../log/winston');
 const qrCode = require('../utils/QRCode');
 
 const NOTIFICATION_QUEUE = "email_queue";
@@ -168,7 +169,7 @@ exports.createQrCode = async (queue_data) => {
             "RabbitMQ_info": RabbitMQ_info
         })
     } catch (err) {
-        throw(err);
+        logger.info(err);
     }
 }
 
