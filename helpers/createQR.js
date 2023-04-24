@@ -163,13 +163,15 @@ exports.createQrCode = async (queue_data) => {
         RabbitMQ_info.exchangeName = NOTIFICATION_QUEUE_EXCHANGE;
         RabbitMQ_info.binding_key = NOTIFICATION_QUEUE_BINDING;
 
-        console.log(RabbitMQ_data);
-        axios.post(process.env.ROOT_URL + '/internal/rabbitmq/send-message', {
+        // console.log(RabbitMQ_data);
+
+        await axios.post(process.env.ROOT_URL + '/internal/rabbitmq/send-message', {
             "payload": payload,
             "RabbitMQ_info": RabbitMQ_info
-        })
+        });
+
     } catch (err) {
-        logger.info(err);
+        logger.info(`[Something went wrong in createQr] => ${err}`);
     }
 }
 

@@ -2,6 +2,7 @@
 nodemon.json
 data/invoices/invoice-*
 data/images/QR-*
+data/QR_file/QR-*
 
 # Logs
 logs

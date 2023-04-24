@@ -218,7 +218,7 @@ module.exports = {
                 throw error;
             }
 
-            const filename = 'QR_-' + order._id + '.pdf';
+            const filename = 'QR-' + order._id + '.pdf';
             const filepath = path.join('data', 'QR_file', filename);
 
             const QRImageName = 'QR-' + order._id + '.png';
@@ -255,7 +255,7 @@ module.exports = {
             RabbitMQ_info.exchangeName = GET_QR_QUEUE_EXCHANGE;
             RabbitMQ_info.binding_key = GET_QR_QUEUE_BINDING;
 
-            axios.post(process.env.ROOT_URL + '/internal/rabbitmq/send-message', {
+            await axios.post(process.env.ROOT_URL + '/internal/rabbitmq/send-message', {
                 "payload": payload,
                 "RabbitMQ_info": RabbitMQ_info
             });

@@ -11,6 +11,10 @@ exports.sendMesaage = async (req, res, next) => {
         };
 
         RabbitMqService.sendMsg(RabbitMQ_data);
+
+        res.status(201).json({
+            statusCode: 200
+        });
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;

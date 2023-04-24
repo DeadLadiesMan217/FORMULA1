@@ -1,5 +1,7 @@
 const nodemailer = require('nodemailer');
 
+const logger = require('../log/winston');
+
 const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE,
     host: process.env.EMAIL_HOST,
@@ -12,19 +14,19 @@ const transporter = nodemailer.createTransport({
 
 module.exports = {
     sendMailToCustomer: async ({ to, subject, html, attachement }) => {
-        console.log(to);
         try {
-            return transporter.sendMail({
+            await transporter.sendMail({
                 to: to,
                 from: process.env.EMAIL_ID,
                 subject: subject,
                 html: html,
                 attachments: [attachement]
             });
+            logger.info(`Mail email to '${to}'`);
         } catch (err) {
             const error = new Error(err);
             error.httpStatusCode = 500;
-            return next(error);
+            logger.error(`[Error in sending mail to '${to}'] => ${error}`);
         }
     }
 };

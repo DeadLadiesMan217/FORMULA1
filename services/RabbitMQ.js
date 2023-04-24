@@ -26,11 +26,10 @@ class RabbitMQ {
             channel.bindQueue(queueName, exchangeName, binding_key);
             channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)));
 
-            logger.info('Message sendto queue');
-            logger.info(JSON.stringify(rawData));
+            logger.info(`[Message send to '${queueName}' queue] msg => ` + JSON.stringify(rawData));
         } catch (err) {
             logger.error(err);
-            logger.error('[something went wrong while publishing message in rabbitmq queue]');
+            logger.error('\n [something went wrong while publishing message in rabbitmq queue] \n');
         }
     };
 
@@ -56,7 +55,7 @@ class RabbitMQ {
             });
         } catch (err) {
             logger.error(err);
-            logger.error('[something went wrong connecting to rabbitmq consumers]');
+            logger.error('\n [something went wrong connecting to rabbitmq consumers] \n');
         }
     };
 };
