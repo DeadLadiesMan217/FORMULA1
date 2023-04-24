@@ -24,7 +24,7 @@ class RabbitMQ {
             await channel.assertQueue(queueName);
 
             channel.bindQueue(queueName, exchangeName, binding_key);
-            channel.sendToQueue(queueName, Buffer.from(JSON.stringify(payload)));
+            channel.publish(exchangeName, binding_key, Buffer.from(JSON.stringify(payload)));
 
             logger.info(`[Message send to '${queueName}' queue] msg => ` + JSON.stringify(rawData));
         } catch (err) {
