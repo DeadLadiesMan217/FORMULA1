@@ -27,6 +27,10 @@ class RabbitMQ {
             channel.publish(exchangeName, binding_key, Buffer.from(JSON.stringify(payload)));
 
             logger.info(`[Message send to '${queueName}' queue] msg => ` + JSON.stringify(rawData));
+
+            setTimeout(() => {
+                connection.close();
+            }, 20000);
         } catch (err) {
             logger.error(err);
             logger.error('\n [something went wrong while publishing message in rabbitmq queue] \n');

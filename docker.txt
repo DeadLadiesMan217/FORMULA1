@@ -1,0 +1,10 @@
+    // - name: Build docker image
+    // run: docker build -t rajmagneto/formula1appbackend_${{ github.ref_name }}:1.0 .
+
+    
+ 
+    // docker run -it --rm -d --name rabbitmq --network f1-application --hos`tname my-rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.11-management
+    
+    // docker run -d --name f1nodeServer -v f1-application-stuffs:/shared-volume --network f1-application --link rabbitmq:rabbitmq --hostname f1nodeServer -p 192.168.43.244:8888:8080 rajmagneto/formula1app:1.6 
+
+    // docker run -d --name mynginx1 --network f1-application --link f1nodeServer:f1nodeServer --hostname nginx -p 80:80 my-nginx:1.0

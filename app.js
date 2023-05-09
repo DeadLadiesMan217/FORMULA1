@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -51,7 +54,7 @@ app.use((error, req, res, next) => {
     const message = error.message || 'Something went wrong!';
     const data = error.data;
     res.status(status).json({ status: status, message: message, data: data });
-})
+});
 
 mongoose
     .connect(MONGODB_URI)
@@ -69,16 +72,26 @@ mongoose
                     user.save()
                 }
             })
-        app.listen(process.env.PORT || 8888);
+        app.listen(process.env.PORT || 8080);
         logger.info("MONGODB Connected!!!");
     })
     .then(() => {
         RabbitMqService.consumeMsg(queueArray);
         logger.info("RabbitMQ consumers connected!!!");
     })
+    .then(() => {
+        let dir1 = `${process.env.ROOT_FILE_PATH}/data/images`;
+        let dir2 = `${process.env.ROOT_FILE_PATH}/data/invoices`;
+        let dir3 = `${process.env.ROOT_FILE_PATH}/data/QR_file`;
+
+        for (let i of [dir1, dir2, dir3]) {
+            if (!fs.existsSync(i)) {
+                fs.mkdirSync(path.join(i), { recursive: true });
+            }
+        }
+
+        logger.info("Volume Synchronize!!!");
+    })
     .catch(err => {
         logger.error(err);
-    })
-
-    // - name: Build docker image
-    // run: docker build -t rajmagneto/formula1appbackend_${{ github.ref_name }}:1.0 .
+    });

@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  f1APP:
+    restart: unless-stopped
+    image: 073b5685e7b9a56f48fb3b5e032a17c89e53d8051d399230051cd9ad6997b59c
+    ports:
+      - 8888:8080
+    networks:
+      - f1-application
+
+  proxy:
+    restart: unless-stopped
+    build: ./nginx
+    ports:
+      - 80:80
+    depends_on:
+      - f1APP
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - f1-application
+
+networks:
+  f1-application:

@@ -4,6 +4,8 @@ data/invoices/invoice-*
 data/images/QR-*
 data/QR_file/QR-*
 
+.txt
+
 # Logs
 logs
 *.log

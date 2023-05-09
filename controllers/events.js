@@ -1,6 +1,6 @@
 const path = require('path');
 
-const axios = require('axios');;
+const axios = require('axios');
 
 const logger = require('../log/winston');
 const User = require('../models/user');
@@ -219,10 +219,10 @@ module.exports = {
             }
 
             const filename = 'QR-' + order._id + '.pdf';
-            const filepath = path.join('data', 'QR_file', filename);
+            const filepath = path.join(`.${process.env.ROOT_FILE_PATH}`, 'data', 'QR_file', filename);
 
             const QRImageName = 'QR-' + order._id + '.png';
-            const QRImagePath = path.join('data', 'images', QRImageName);
+            const QRImagePath = path.join(`.${process.env.ROOT_FILE_PATH}`, 'data', 'images', QRImageName);
 
             const product = await Event.findOne({ _id: order.products[0].product });
 
@@ -234,7 +234,7 @@ module.exports = {
 
             Object.assign(payload, {
                 orderDetails: {
-                    orderId: product._id,
+                    orderId: order._id,
                     eventName: product.eventName,
                     eventDate: product.eventDate
                 },

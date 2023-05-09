@@ -22,7 +22,7 @@ module.exports = {
                 html: html,
                 attachments: [attachement]
             });
-            logger.info(`Mail email to '${to}'`);
+            logger.info(`Mail sent to '${to}'`);
         } catch (err) {
             const error = new Error(err);
             error.httpStatusCode = 500;

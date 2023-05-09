@@ -42,14 +42,14 @@ exports.createQrCode = async (queue_data) => {
         pdfDoc.roundedRect(25, 25, 250, 450, 5).fill('white');  // inner-rect
 
         pdfDoc
-            .image(path_.join('data', 'images', 'formula1.png'), 35, 35, {
+            .image(path_.join(`.${process.env.ROOT_FILE_PATH}`, 'data', 'images', 'formula1.png'), 35, 35, {
                 fit: [100, 100],
                 align: 'center',
                 valign: 'center'
             });  // Logo image
 
         pdfDoc
-            .image(path_.join('data', 'images', 'fia-road-safety.png'), 35, 90, {
+            .image(path_.join(`.${process.env.ROOT_FILE_PATH}`, 'data', 'images', 'fia-road-safety.png'), 35, 90, {
                 fit: [100, 100],
                 align: 'center',
                 valign: 'center'
@@ -171,7 +171,8 @@ exports.createQrCode = async (queue_data) => {
         });
 
     } catch (err) {
-        logger.info(`[Something went wrong in createQr] => ${err}`);
+        logger.error(`[Something went wrong in createQr] => ${err}`);
+        logger.error(err);
     }
 }
 

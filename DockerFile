@@ -8,7 +8,8 @@ RUN npm install
 
 COPY . .
 
-ENV PORT=8080 \
+ENV NODE_ENV=PRODUCTION \
+    PORT=8080 \
     MONGO_USER=raj \
     MONGO_PASSWORD=EvlYbfEtt2QJ889N \
     MONGO_DEFAULT_DATABASE=formula1 \
@@ -17,7 +18,10 @@ ENV PORT=8080 \
     EMAIL_HOST=outlook.office365.com \
     EMAIL_PORT=995 \
     EMAIL_ID=dev.magneto@outlook.com \
-    EMAIL_PASS=bravoSix@141
+    EMAIL_PASS=formula1@2022 \
+    AMQL_CONNECTION_URL=amqp://guest:guest@rabbitmq:5672 \
+    TEST_EMAIL=panja.tushar15@gmail.com \
+    ROOT_URL=http://localhost:8080
 
 EXPOSE 8080
 
