@@ -15,7 +15,7 @@ const logger = new createLogger({
     defaultMeta: { service: 'user-service' },
     transports: [
         new transports.Console(),
-        new transports.File({ filename: `.${process.env.ROOT_FILE_PATH}/logs/application.log` })
+        new transports.File({ filename: `${process.env.ROOT_FILE_PATH}/logs/application.log` })
     ],
 });
 
