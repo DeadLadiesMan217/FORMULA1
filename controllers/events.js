@@ -219,10 +219,10 @@ module.exports = {
             }
 
             const filename = 'QR-' + order._id + '.pdf';
-            const filepath = path.join(`.${process.env.ROOT_FILE_PATH}`, 'data', 'QR_file', filename);
+            const filepath = path.join(`${process.env.ROOT_FILE_PATH}`, 'data', 'QR_file', filename);
 
             const QRImageName = 'QR-' + order._id + '.png';
-            const QRImagePath = path.join(`.${process.env.ROOT_FILE_PATH}`, 'data', 'images', QRImageName);
+            const QRImagePath = path.join(`${process.env.ROOT_FILE_PATH}`, 'data', 'images', QRImageName);
 
             const product = await Event.findOne({ _id: order.products[0].product });
 

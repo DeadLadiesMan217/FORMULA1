@@ -72,7 +72,7 @@ mongoose
                     user.save()
                 }
             })
-        app.listen(process.env.PORT || 8080);
+        app.listen(process.env.PORT || 8888);
         logger.info("MONGODB Connected!!!");
     })
     .then(() => {
