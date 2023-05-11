@@ -64,9 +64,9 @@ exports.stipeWebHook = async (req, res, next) => {
     let event;
 
     try {
-        event = stripe.webhooks.constructEvent(req.body, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET_KEY);
+        event = stripe.webhooks.constructEvent(req.body.rawBody, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET_KEY);
 
-        res.status(200);
+        res.send();
 
     } catch (err) {
         if (!err.statusCode) {
