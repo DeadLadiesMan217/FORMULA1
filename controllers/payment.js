@@ -63,13 +63,15 @@ exports.getCheckoutCancel = async (req, res, next) => {
 exports.stipeWebHook = async (req, res, next) => {
     let event = req.body;
 
-    console.log(event);
-    
+    console.log(event, '[event]');
+
     // Only verify the event if you have an endpoint secret defined.
     // Otherwise use the basic event deserialized with JSON.parse
     if (process.env.STRIPE_WEBHOOK_SECRET_KEY) {
         // Get the signature sent by Stripe
         const signature = req.headers['stripe-signature'];
+    console.log(signature, '[signature]');
+
         try {
             event = stripe.webhooks.constructEvent(
                 req.body,
