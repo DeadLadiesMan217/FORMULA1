@@ -11,6 +11,7 @@ const logger = require('./log/winston');
 const eventRoute = require('./routes/events');
 const adminRoute = require('./routes/admin');
 const rabbitmqRoute = require('./routes/rabbitmq');
+const paymentRoute = require('./routes/payment');
 const User = require('./models/user');
 const RabbitMqService = require('./services/RabbitMQ');
 
@@ -47,6 +48,7 @@ app.use((req, res, next) => {
 app.use('/events', eventRoute);
 app.use('/admin', adminRoute);
 app.use('/internal/rabbitmq', rabbitmqRoute);
+app.use('/internal/payments', paymentRoute);
 
 app.use((error, req, res, next) => {
     console.log(error);

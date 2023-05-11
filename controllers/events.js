@@ -255,7 +255,7 @@ module.exports = {
             RabbitMQ_info.exchangeName = GET_QR_QUEUE_EXCHANGE;
             RabbitMQ_info.binding_key = GET_QR_QUEUE_BINDING;
 
-            await axios.post(process.env.ROOT_URL + '/internal/rabbitmq/send-message', {
+            await axios.post(req.protocol + '://' + req.get('host') + '/internal/rabbitmq/send-message', {
                 "payload": payload,
                 "RabbitMQ_info": RabbitMQ_info
             });

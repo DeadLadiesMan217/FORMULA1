@@ -24,6 +24,7 @@
     "nodemailer": "^6.8.0",
     "pdfkit": "^0.13.0",
     "qrcode": "^1.5.1",
+    "stripe": "^12.4.0",
     "winston": "^3.7.2"
   },
   "devDependencies": {
