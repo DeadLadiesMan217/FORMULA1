@@ -2,18 +2,17 @@ const fs = require('fs');
 const path = require('path');
 
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const CronJob = require('cron').CronJob;
 
 const logger = require('./log/winston');
-
 const eventRoute = require('./routes/events');
 const adminRoute = require('./routes/admin');
 const rabbitmqRoute = require('./routes/rabbitmq');
 const paymentRoute = require('./routes/payment');
 const User = require('./models/user');
 const RabbitMqService = require('./services/RabbitMQ');
+const bodyParser = require('./middleware/bodyParser');
 
 const queueArray = ['get_qr_ticket_queue', 'email_queue'];
 
@@ -22,7 +21,7 @@ logger.info(process.env.NODE_ENV);
 
 const app = express();
 
-// app.use(bodyParser.json());
+app.use(bodyParser);
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
