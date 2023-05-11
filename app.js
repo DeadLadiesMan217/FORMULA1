@@ -22,7 +22,7 @@ logger.info(process.env.NODE_ENV);
 
 const app = express();
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
