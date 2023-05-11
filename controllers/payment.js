@@ -61,18 +61,26 @@ exports.getCheckoutCancel = async (req, res, next) => {
 };
 
 exports.stipeWebHook = async (req, res, next) => {
-    let event;
-
-    try {
-        event = stripe.webhooks.constructEvent(req.body.rawBody, req.headers['stripe-signature'], process.env.STRIPE_WEBHOOK_SECRET_KEY);
-
-        res.status(200);
-
-    } catch (err) {
-        if (!err.statusCode) {
-            err.statusCode = 500;
+    let event = req.body;
+    // Only verify the event if you have an endpoint secret defined.
+    // Otherwise use the basic event deserialized with JSON.parse
+    if (endpointSecret) {
+        // Get the signature sent by Stripe
+        const signature = req.headers['stripe-signature'];
+        try {
+            event = stripe.webhooks.constructEvent(
+                req.body,
+                signature,
+                process.env.STRIPE_WEBHOOK_SECRET_KEY
+            );
+        } catch (err) {
+            logger.error(`⚠️  Webhook signature verification failed.`, err.message);
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+            return response.sendStatus(400);
         }
-        next(err);
     }
 
     switch (event.type) {
@@ -95,8 +103,10 @@ exports.stipeWebHook = async (req, res, next) => {
             const checkoutSessionExpired = event.data.object;
             logger.info(checkoutSessionExpired);
             break;
-            
+
         default:
             console.log(`Unhandled event type ${event.type}`);
     }
+
+    res.send();
 };

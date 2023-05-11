@@ -51,7 +51,7 @@ app.use('/internal/rabbitmq', rabbitmqRoute);
 app.use('/internal/payments', paymentRoute);
 
 app.use((error, req, res, next) => {
-    console.log(error);
+    logger.error(error);
     const status = error.statusCode || 500;
     const message = error.message || 'Something went wrong!';
     const data = error.data;
