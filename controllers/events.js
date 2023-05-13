@@ -23,13 +23,11 @@ let RabbitMQ_data = {
 module.exports = {
     getEvents: async (req, res, next) => {
         try {
-            const user = await req.user.populate();
             const events = await Event.find();
 
             res.status(200).json({
                 message: "Events fetched!!",
-                data: events,
-                user: user._id
+                data: events
             });
 
             logger.info("Events fetched");
@@ -43,7 +41,7 @@ module.exports = {
 
     getCart: async (req, res, next) => {
         try {
-            const user = await req.user.populate();
+            const user = await User.findOne({ _id: req.user }).populate();
             const products = await user.cart.items;
 
             res.status(200).json({
@@ -70,7 +68,8 @@ module.exports = {
                 throw error;
             }
 
-            await req.user.addToCart(event);
+            const user = await User.findOne({ _id: req.user }).populate();
+            await user.addToCart(event);
 
             res.status(201).json({
                 message: "Event added to Cart."
@@ -84,10 +83,9 @@ module.exports = {
     },
 
     deleteCartProduct: async (req, res, next) => {
-        //const event_ID = req.body.eventId;
         try {
-            // await req.user.removeFromCart(event_ID);
-            await req.user.clearCart();
+            const user = await User.findOne({ _id: req.user });
+            await user.clearCart();
 
             res.status(201).json({
                 message: "Item deleted from cart."
@@ -102,11 +100,14 @@ module.exports = {
 
     getOrders: async (req, res, next) => {
         try {
-            const orders = await Order.find({ "user.userId": req.user._id });
+            const orders = await Order.find({ "user.userId": req.user });
 
             res.status(200).json({
                 message: "Orders",
-                data: orders
+                data: {
+                    userId: req.user,
+                    orders: orders
+                }
             });
         } catch (err) {
             if (!err.statusCode) {
@@ -157,53 +158,53 @@ module.exports = {
         }
     },
 
-    getInvoice: async (req, res, next) => {
-        try {
-            const id = req.params.orderId;
-            const order = await Order.findOne({ _id: id });
+    // getInvoice: async (req, res, next) => {
+    //     try {
+    //         const id = req.params.orderId;
+    //         const order = await Order.findOne({ _id: id });
 
-            console.log(order)
+    //         console.log(order)
 
-            if (!order) {
-                const error = new Error('no Order found!');
-                error.statusCode = 401;
-                throw error;
-            }
-
-
-
-            const QRdata = JSON.stringify({
-                name: req.user.name,
-                userId: req.user.email,
-                ticketId: order._id
-            });
-
-            console.log(QRdata)
-
-            const invoiceName = 'invoice-' + order._id + '.pdf';
-            const invoicePath = path.join('data', 'invoices', invoiceName);
+    //         if (!order) {
+    //             const error = new Error('no Order found!');
+    //             error.statusCode = 401;
+    //             throw error;
+    //         }
 
 
-            //! send data to rabbitmq in create_invoice queue
-            const RabbitMQ_data = {
-                invoice_data: {
-                    invoiceName,
-                    invoicePath
-                }
-            };
 
-            console.log(RabbitMQ_data)
+    //         const QRdata = JSON.stringify({
+    //             name: req.user.name,
+    //             userId: req.user.email,
+    //             ticketId: order._id
+    //         });
 
-            res.status(201).json({
-                message: `Data send'`
-            });
-        } catch (err) {
-            if (!err.statusCode) {
-                err.statusCode = 500;
-            }
-            next(err);
-        }
-    },
+    //         console.log(QRdata)
+
+    //         const invoiceName = 'invoice-' + order._id + '.pdf';
+    //         const invoicePath = path.join('data', 'invoices', invoiceName);
+
+
+    //         //! send data to rabbitmq in create_invoice queue
+    //         const RabbitMQ_data = {
+    //             invoice_data: {
+    //                 invoiceName,
+    //                 invoicePath
+    //             }
+    //         };
+
+    //         console.log(RabbitMQ_data)
+
+    //         res.status(201).json({
+    //             message: `Data send'`
+    //         });
+    //     } catch (err) {
+    //         if (!err.statusCode) {
+    //             err.statusCode = 500;
+    //         }
+    //         next(err);
+    //     }
+    // },
 
     getQrTicket: async (req, res, next) => {
         try {

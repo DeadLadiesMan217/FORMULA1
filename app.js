@@ -6,13 +6,14 @@ const mongoose = require('mongoose');
 const CronJob = require('cron').CronJob;
 
 const logger = require('./log/winston');
-const eventRoute = require('./routes/events');
+const authRoutes = require('./routes/auth');
 const adminRoute = require('./routes/admin');
-const rabbitmqRoute = require('./routes/rabbitmq');
+const eventRoute = require('./routes/events');
 const paymentRoute = require('./routes/payment');
-const User = require('./models/user');
-const RabbitMqService = require('./services/RabbitMQ');
+const rabbitmqRoute = require('./routes/rabbitmq');
 const bodyParser = require('./middleware/bodyParser');
+const RabbitMqService = require('./services/RabbitMQ');
+const User = require('./models/user');
 
 const queueArray = ['get_qr_ticket_queue', 'email_queue'];
 
@@ -33,17 +34,18 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use((req, res, next) => {
-    User.findById("62a8330c98456e8cba648ed5")
-        .then(user => {
-            req.user = user;
-            next();
-        })
-        .catch(err => {
-            logger.error(err);
-        })
-});
+// app.use((req, res, next) => {
+//     User.findById("62a8330c98456e8cba648ed5")
+//         .then(user => {
+//             req.user = user;
+//             next();
+//         })
+//         .catch(err => {
+//             logger.error(err);
+//         })
+// });
 
+app.use('/auth', authRoutes);
 app.use('/events', eventRoute);
 app.use('/admin', adminRoute);
 app.use('/internal/rabbitmq', rabbitmqRoute);
@@ -60,19 +62,19 @@ app.use((error, req, res, next) => {
 mongoose
     .connect(MONGODB_URI)
     .then(() => {
-        User.findOne()
-            .then(user => {
-                if (!user) {
-                    const user = new User({
-                        name: 'raj',
-                        email: 'raj@raj.com',
-                        cart: {
-                            items: []
-                        }
-                    })
-                    user.save()
-                }
-            })
+        // User.findOne()
+        //     .then(user => {
+        //         if (!user) {
+        //             const user = new User({
+        //                 name: 'raj',
+        //                 email: 'raj@raj.com',
+        //                 cart: {
+        //                     items: []
+        //                 }
+        //             })
+        //             user.save()
+        //         }
+        //     })
         app.listen(process.env.PORT || 8888);
         logger.info("MONGODB Connected!!!");
     })
@@ -92,6 +94,7 @@ mongoose
         }
 
         logger.info("Volume Synchronize!!!");
+        logger.info("App is now live 🚀");
     })
     .catch(err => {
         logger.error(err);
