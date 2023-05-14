@@ -1,0 +1,49 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches: ["master", "staging", "development"]
+  pull_request:
+    branches: ["master", "staging", "development"]
+
+env:
+  node-version: 16.17
+
+jobs:
+  npm-test:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ env.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.node-version }}
+          cache: "npm"
+
+      - run: npm ci
+      - run: npm run start-server
+
+  integation:
+    needs: npm-test
+    environment: ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - run: echo "test complete."
+
+  deploy:
+    needs: npm-test
+    environment: ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: Render Deployment
+        uses: sws2apps/render-deployment@v1.1.0
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}
