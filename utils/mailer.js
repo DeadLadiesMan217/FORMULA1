@@ -20,7 +20,7 @@ module.exports = {
                 from: process.env.EMAIL_ID,
                 subject: subject,
                 html: html,
-                attachments: [attachement]
+                attachement: !attachement ? '' : [attachement]
             });
             logger.info(`Mail sent to '${to}'`);
         } catch (err) {
